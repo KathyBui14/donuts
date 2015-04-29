@@ -1,0 +1,31 @@
+List of TODOs:
+
+Task  : Setup git repo and add members.
+Owner : Kathy
+Status: done
+
+Task  :
+Owner :
+Status:
+
+
+Task  :
+Owner :
+Status:
+
+
+Task  :
+Owner :
+Status:
+
+
+Task  :
+Owner :
+Status:
+
+
+
+
+
+
+
