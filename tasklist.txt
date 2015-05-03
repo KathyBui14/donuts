@@ -18,7 +18,7 @@ Due Date:
 
 Task  : Add flowchart for branch predictor to report
 Owner : Kathy
-Status:
+Status: done
 Due Date:
 
 
