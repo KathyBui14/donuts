@@ -1,27 +1,53 @@
 List of TODOs:
 
+Project Progress Due Date: May 13th Wednesday
+Project Presentation Date: June 3rd Wednesday
+Final Exam Date: June 1st Monday
+Project Due Date: June 9th Tuesday
+
+
 Task  : Setup git repo and add members.
 Owner : Kathy
 Status: done
+Due Date:
 
-Task  :
+Task  : Create structures in branch predictor for Alpha 21264a architecture.
+Owner : Kathy/Jordan
+Status:
+Due Date:
+
+Task  : Add flowchart for branch predictor to report
+Owner : Kathy
+Status:
+Due Date:
+
+
+Task  : Determine how to use structures in existing predictor.
 Owner :
 Status:
+Due Date:
 
-
-Task  :
+Task  : Functions to implement each counter ( 3 total )
 Owner :
 Status:
+Due Date:
 
-
-Task  :
+Task  : Validate/Test for each functions to implement each counter ( 3 total )
+        Includes writing trace files with known inputs/outputs
 Owner :
 Status:
+Due Date:
 
-
-Task  :
+Task  : Validate/Test functionality
 Owner :
 Status:
+Due Date:
+
+Task  : Run Test Benches, SPEC ( research how to run test suites )
+Owner :
+Status:
+Due Date:
+
 
 
 
