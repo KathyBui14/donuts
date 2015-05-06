@@ -59,6 +59,9 @@
 #include "machine.h"
 #include "bpred.h"
 
+#include "tournbpred.h"
+
+
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
