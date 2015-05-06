@@ -59,6 +59,7 @@
 #include "machine.h"
 #include "bpred.h"
 
+
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
@@ -111,6 +112,7 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
   case BPredTaken:
   case BPred_JRF:
     printf("Jordans Branch Predictor called!\n");
+    alphaBP.path_history[0] = 0x5A5;
     
     break;
   case BPredNotTaken:
@@ -301,7 +303,7 @@ bpred_dir_config(
 
   case BPred_JRF:
     fprintf(stream, "Jordans Branch Predictor called!\n");
-    
+    printf("\n%x\n",alphaBP.path_history[0]);
     break;
 
   case BPredNotTaken:
@@ -375,7 +377,6 @@ bpred_reg_stats(struct bpred_t *pred,	/* branch predictor instance */
 {
   char buf[512], buf1[512], *name;
 
-  /* get a name for this predictor */
   switch (pred->class)
     {
     case BPredComb:
