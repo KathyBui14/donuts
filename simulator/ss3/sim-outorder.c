@@ -72,7 +72,6 @@
 #include "ptrace.h"
 #include "dlite.h"
 #include "sim.h"
-#include "alpha_bp.h"
 
 /*
  * This file implements a very detailed out-of-order issue superscalar
@@ -618,10 +617,6 @@ sim_reg_options(struct opt_odb_t *odb)
 	       );
 
   /* ifetch options */
-printf("\n------------------HERE---------------------\n");
-alphaBP.path_history[0] = 0x5A5;
-printf("\n   %x\n",alphaBP.path_history[0]);
-
   opt_reg_int(odb, "-fetch:ifqsize", "instruction fetch queue size (in insts)",
 	      &ruu_ifq_size, /* default */4,
 	      /* print */TRUE, /* format */NULL);

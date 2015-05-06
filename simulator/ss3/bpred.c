@@ -58,10 +58,40 @@
 #include "misc.h"
 #include "machine.h"
 #include "bpred.h"
-
-
 #include "tournbpred.h"
 
+/***** Alpha Branch Predictor functions *****/
+// This is the function to increment and decrement the three bit counter
+void three_bit_counter() {
+
+  /* INSERT CODE */
+
+}
+
+// This is the function to increment and decrement the two bit counter
+void two_bit_counter() {
+
+  /* INSERT CODE */
+
+}
+
+// This is the function to get the prediction in a table of size 4096
+int twelve_bit_get_pred(/*pass in the twelve bit index*/) {
+
+  /* INSERT CODE */
+
+  return 0; //will need to return the prediction, but 0 for now
+}
+
+// This is the function to get the prediction in a table of size 1024
+int ten_bit_get_pred(/*pass in the ten bit index*/) {
+
+  /* INSERT CODE */
+
+  return 0; //will need to return the prediction, but 0 for now
+}
+
+/********************************************************/
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
@@ -114,7 +144,6 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
   case BPredTaken:
   case BPred_JRF:
     printf("Jordans Branch Predictor called!\n");
-    alphaBP.path_history[0] = 0x5A5;
     
     break;
   case BPredNotTaken:
@@ -305,7 +334,7 @@ bpred_dir_config(
 
   case BPred_JRF:
     fprintf(stream, "Jordans Branch Predictor called!\n");
-    printf("\n%x\n",alphaBP.path_history[0]);
+
     break;
 
   case BPredNotTaken:

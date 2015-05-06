@@ -65,7 +65,6 @@
 #include "stats.h"
 #include "bpred.h"
 #include "sim.h"
-#include "alpha_bp.h"
 
 /*
  * This file implements a branch predictor analyzer.
@@ -123,10 +122,6 @@ sim_reg_options(struct opt_odb_t *odb)
   opt_reg_header(odb, 
 "sim-bpred: This simulator implements a branch predictor analyzer.\n"
 		 );
-printf("\n------------------HERE---------------------\n");
-alphaBP.path_history[0] = 0x5A5;
-printf("\n   %x\n",alphaBP.path_history[0]);
-
 
   /* branch predictor options */
   opt_reg_note(odb,
