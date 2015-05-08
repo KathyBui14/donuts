@@ -87,16 +87,16 @@ void two_bit_counter() {
     int twoBitCtr;
     bool prediction;
 
-    if(prediction == 0 && prediction == true)
+    if(twoBitCtr == 0 && prediction == true)
         twoBitCtr = 0;
 
-    else if(prediction  != 0 && prediction < 4 && prediction == true)
+    else if(twoBitCtr  > 0 && prediction == true)
         twoBitCtr = twoBitCtr - 1;
 
-    else if(prediction != 3 && prediction == false)
+    else if(twoBitCtr < 3 && prediction == false)
         twoBitCtr = twoBitCtr + 1;
 
-    else if(prediction == 3 && prediction == false)
+    else if(twoBitCtr == 3 && prediction == false)
         twoBitCtr = 3;
 }
 
