@@ -67,17 +67,24 @@ void three_bit_counter() {
     int threeBitCtr;
     bool prediction;
 
-    if(prediction == 0 && prediction == true)
+    // Increment and decrement counter accordingly
+    if(threeBitCtr == 0 && prediction == true)
         threeBitCtr = 0;
 
-    else if(prediction  != 0 && prediction < 4 && prediction == true)
-        threeBitCtr = threeBitCtr - 1;
+    else if(threeBitCtr  > 0 && prediction == true)
+        threeBitCtr = twoBitCtr - 1;
 
-    else if(prediction != 3 && prediction == false)
-        threeBitCtr = threeBitCtr + 1;
+    else if(threeBitCtr < 7 && prediction == false)
+        threeBitCtr = twoBitCtr + 1;
 
-    else if(prediction == 3 && prediction == false)
-        threeBitCtr = 3;
+    else if(threeBitCtr == 7 && prediction == false)
+        threeBitCtr = 7;
+
+    // Determine prediction as taken or not taken
+    if(threeBitCtr < 4)
+        prediction = true;
+    else // Counter is 4 or above
+        prediction = false;
 
 }
 
@@ -87,6 +94,7 @@ void two_bit_counter() {
     int twoBitCtr;
     bool prediction;
 
+    // Increment and decrement counter accordingly
     if(twoBitCtr == 0 && prediction == true)
         twoBitCtr = 0;
 
@@ -98,6 +106,12 @@ void two_bit_counter() {
 
     else if(twoBitCtr == 3 && prediction == false)
         twoBitCtr = 3;
+
+       // Determine prediction as taken or not taken
+    if(threeBitCtr < 2)
+        prediction = true;
+    else // Counter is 2 or 3
+        prediction = false;
 }
 
 // This is the function to get the prediction in a table of size 4096
