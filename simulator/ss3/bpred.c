@@ -71,8 +71,20 @@ void three_bit_counter() {
 // This is the function to increment and decrement the two bit counter
 void two_bit_counter() {
 
-  /* INSERT CODE */
+    int bitCtr;
+    bool prediction;
 
+    if(prediction == 0 && prediction == true)
+        prediction = 0;
+
+    else if(prediction  != 0 && prediction < 4 && prediction == true)
+        prediction = prediction - 1;
+
+    else if(prediction != 3 && prediction == false)
+        prediction = prediction + 1;
+
+    else if(prediction == 3 && prediction == false)
+        prediction = 3;
 }
 
 // This is the function to get the prediction in a table of size 4096
