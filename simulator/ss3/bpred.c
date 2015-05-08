@@ -64,27 +64,40 @@
 // This is the function to increment and decrement the three bit counter
 void three_bit_counter() {
 
-  /* INSERT CODE */
+    int threeBitCtr;
+    bool prediction;
+
+    if(prediction == 0 && prediction == true)
+        threeBitCtr = 0;
+
+    else if(prediction  != 0 && prediction < 4 && prediction == true)
+        threeBitCtr = threeBitCtr - 1;
+
+    else if(prediction != 3 && prediction == false)
+        threeBitCtr = threeBitCtr + 1;
+
+    else if(prediction == 3 && prediction == false)
+        threeBitCtr = 3;
 
 }
 
 // This is the function to increment and decrement the two bit counter
 void two_bit_counter() {
 
-    int bitCtr;
+    int twoBitCtr;
     bool prediction;
 
     if(prediction == 0 && prediction == true)
-        prediction = 0;
+        twoBitCtr = 0;
 
     else if(prediction  != 0 && prediction < 4 && prediction == true)
-        prediction = prediction - 1;
+        twoBitCtr = twoBitCtr - 1;
 
     else if(prediction != 3 && prediction == false)
-        prediction = prediction + 1;
+        twoBitCtr = twoBitCtr + 1;
 
     else if(prediction == 3 && prediction == false)
-        prediction = 3;
+        twoBitCtr = 3;
 }
 
 // This is the function to get the prediction in a table of size 4096
