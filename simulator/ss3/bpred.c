@@ -71,10 +71,10 @@ void bpred_create_alpha() {
 		alpha.GlobalPred[i] = 0x0;
 		alpha.ChoicePred[i] = 0x0;
 	}
-  PathHist = 0x0;  
-	LHistory = 0x0;
-	is_global = false;
-  BPred = false;
+  alpha.PathHist = 0x0;  
+	alpha.LHistory = 0x0;
+	alpha.is_global = false;
+  alpha.BPred = false;
 }
 
 // This is the function to increment and decrement the three bit counter
