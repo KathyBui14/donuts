@@ -62,6 +62,10 @@
 
 /***** Alpha Branch Predictor functions *****/
 // This is the function to increment and decrement the three bit counter
+void bpred_create_alpha() {
+
+}
+
 void three_bit_counter() {
 
   int threeBitCtr;
@@ -79,12 +83,6 @@ void three_bit_counter() {
 
   else if(threeBitCtr == 7 && prediction == false)
       threeBitCtr = 7;
-
-  /*// Determine prediction as taken or not taken
-  if(threeBitCtr < 4)
-      prediction = true;
-  else // Counter is 4 or above
-      prediction = false;*/
 
 }
 
@@ -107,11 +105,6 @@ void two_bit_counter() {
   else if(twoBitCtr == 3 && prediction == false)
       twoBitCtr = 3;
 
-  /*   // Determine prediction as taken or not taken
-  if(twoBitCtr < 2)
-      prediction = true;
-  else // Counter is 2 or 3
-      prediction = false;*/
 }
 
 // This is the function to get the prediction in a table of size 4096
