@@ -110,7 +110,7 @@ static int ruu_branch_penalty;
 /* speed of front-end of machine relative to execution core */
 static int fetch_speed;
 
-/* branch predictor type {nottaken|taken|perfect|bimod|2lev|BPJRF} */
+/* branch predictor type {nottaken|taken|perfect|bimod|2lev|BPALPHA} */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -899,7 +899,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       pred = NULL;
       pred_perfect = TRUE;
     }
-  else if (!mystricmp(pred_type, "BPJRF"))
+  else if (!mystricmp(pred_type, "BPALPHA"))
     {
       /* static predictor, not taken */
       pred = bpred_create_alpha();
