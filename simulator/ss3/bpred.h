@@ -105,7 +105,7 @@ enum bpred_class {
   BPredTaken,			/* static predict taken */
   BPredNotTaken,		/* static predict not taken */
   BPred_NUM, 
-  BPred_JRF
+  BPred_Alpha   /* alpha branch predictor
 };
 
 /* an entry in a BTB */
