@@ -13,7 +13,7 @@
 #define PHistMask 0x00000FFF
 
 struct alpha_Bpred {
-    int LocalHist[1024];    // size of PC = bits, NEED TO CHECK!
+    int LocalHist[1024];    // size of PC = bits, NEED TO CHECK!git 
     int LocalPred[1024];    // 10 bits
     int GlobalPred[4096];   // 12 bits
     int ChoicePred[4096];   // 12 bits
