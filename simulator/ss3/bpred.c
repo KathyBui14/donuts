@@ -61,6 +61,22 @@
 #include "tournbpred.h"
 
 /***** Alpha Branch Predictor functions *****/
+void bpred_create_alpha() {
+	int i;	
+	for (i = 0; i < 1024; i++) {
+		alpha.LocalHist[i] = 0x0;
+		alpha.LocalPred[i] = 0x0;
+	}
+	for (i = 0; i < 4096; i++) {
+		alpha.GlobalPred[i] = 0x0;
+		alpha.ChoicePred[i] = 0x0;
+	}
+  PathHist = 0x0;  
+	LHistory = 0x0;
+	is_global = false;
+  BPred = false;
+}
+
 // This is the function to increment and decrement the three bit counter
 void three_bit_counter() {
 
@@ -79,13 +95,6 @@ void three_bit_counter() {
 
   else if(threeBitCtr == 7 && prediction == false)
       threeBitCtr = 7;
-
-  /*// Determine prediction as taken or not taken
-  if(threeBitCtr < 4)
-      prediction = true;
-  else // Counter is 4 or above
-      prediction = false;*/
-
 }
 
 // This is the function to increment and decrement the two bit counter
@@ -106,12 +115,6 @@ void two_bit_counter() {
 
   else if(twoBitCtr == 3 && prediction == false)
       twoBitCtr = 3;
-
-  /*   // Determine prediction as taken or not taken
-  if(twoBitCtr < 2)
-      prediction = true;
-  else // Counter is 2 or 3
-      prediction = false;*/
 }
 
 // This is the function to get the prediction in a table of size 4096
