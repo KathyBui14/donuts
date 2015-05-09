@@ -146,7 +146,7 @@ sim_reg_options(struct opt_odb_t *odb)
 	       /* print */TRUE, /* format */NULL);
 
   opt_reg_string(odb, "-bpred",
-		 "branch predictor type {nottaken|taken|bimod|2lev|comb|BPJRF}",
+		 "branch predictor type {nottaken|taken|bimod|2lev|comb|BPALPHA}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
