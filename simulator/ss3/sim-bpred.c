@@ -199,7 +199,7 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
     {
       /* static predictor, Jordan */
 
-      pred = bpred_create(BPred_JRF, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      pred = bpred_create_alpha();
     }
   else if (!mystricmp(pred_type, "bimod"))
     {
