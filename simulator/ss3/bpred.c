@@ -205,7 +205,7 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
       bpred_dir_create(class, bimod_size, 0, 0, 0);
 
   case BPredTaken:
-  case BPred_JRF:
+  case BPred_Alpha:
 
   printf("alpha predictor");
     
@@ -266,7 +266,7 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
     }
 
   case BPredTaken:
-  case BPred_JRF:
+  case BPred_Alpha:
     printf("Jordans Branch Predictor called!\n");
     
     break;
@@ -357,7 +357,7 @@ bpred_dir_create (
     break;
 
   case BPredTaken:
-  case BPred_JRF:
+  case BPred_Alpha:
     printf("Jordans Branch Predictor called!\n");
     
     break;
@@ -396,7 +396,7 @@ bpred_dir_config(
     fprintf(stream, "pred_dir: %s: predict taken\n", name);
     break;
 
-  case BPred_JRF:
+  case BPred_Alpha:
     fprintf(stream, "Jordans Branch Predictor called!\n");
 
     break;
@@ -442,7 +442,7 @@ bpred_config(struct bpred_t *pred,	/* branch predictor instance */
   case BPredTaken:
     bpred_dir_config (pred->dirpred.bimod, "taken", stream);
     break;
-  case BPred_JRF:
+  case BPred_Alpha:
     bpred_dir_config (pred->dirpred.bimod, "taken", stream);
     break;
   case BPredNotTaken:
@@ -486,8 +486,8 @@ bpred_reg_stats(struct bpred_t *pred,	/* branch predictor instance */
     case BPredTaken:
       name = "bpred_taken";
       break;
-    case BPred_JRF:
-      name = "bpred_JRF";
+    case BPred_Alpha:
+      name = "bpred_Alpha";
       break;
     case BPredNotTaken:
       name = "bpred_nottaken";
@@ -653,7 +653,7 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,	/* branch dir predictor inst */
       p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
     case BPredTaken:
-    case BPred_JRF:
+    case BPred_Alpha:
     case BPredNotTaken:
       break;
     default:
@@ -738,7 +738,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
       break;
     case BPredTaken:
       return btarget;
-    case BPred_JRF:
+    case BPred_Alpha:
       return btarget;
     case BPredNotTaken:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
@@ -930,7 +930,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
   if (pred->class == BPredNotTaken || pred->class == BPredTaken)
     return;
   /* Can exit now if this is a stateless predictor */
-  if (pred->class == BPred_JRF)
+  if (pred->class == BPred_Alpha)
     return;
   /* 
    * Now we know the branch didn't use the ret-addr stack, and that this
