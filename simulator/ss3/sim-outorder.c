@@ -649,7 +649,7 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|BPJRF}",
+		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|BPALPHA}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
@@ -902,7 +902,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
   else if (!mystricmp(pred_type, "BPJRF"))
     {
       /* static predictor, not taken */
-      pred = bpred_create(BPred_JRF, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      pred = bpred_create_alpha();
     }
   else if (!mystricmp(pred_type, "taken"))
     {

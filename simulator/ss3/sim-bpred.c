@@ -195,7 +195,7 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
       /* static predictor, taken */
       pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
-  else if (!mystricmp(pred_type, "BPJRF"))
+  else if (!mystricmp(pred_type, "BPALPHA"))
     {
       /* static predictor, Jordan */
 
