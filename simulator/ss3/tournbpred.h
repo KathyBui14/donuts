@@ -14,12 +14,12 @@
 
 struct alpha_Bpred {
 
-  int LocalHist[1024];    // size of PC = bits, NEED TO CHECK!
-  int LocalPred[1024];    // 10 bits
-  int GlobalPred[4096];   // 12 bits
-  int ChoicePred[4096];   // 12 bits
+  unsigned int LocalHist[1024];    // size of PC = bits, NEED TO CHECK!
+  unsigned int LocalPred[1024];    // 10 bits
+  unsigned int GlobalPred[4096];   // 12 bits
+  unsigned int ChoicePred[4096];   // 12 bits
   unsigned int PathHist;  // 12 bits
-	int LHistory;
+	unsigned int LHistory;
 	bool is_global;
   bool BPred;             
 }alpha;
