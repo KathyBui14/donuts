@@ -61,22 +61,6 @@
 #include "tournbpred.h"
 
 /***** Alpha Branch Predictor functions *****/
-void bpred_create_alpha() {
-	int i;	
-	for (i = 0; i < 1024; i++) {
-		alpha.LocalHist[i] = 0x0;
-		alpha.LocalPred[i] = 0x0;
-	}
-	for (i = 0; i < 4096; i++) {
-		alpha.GlobalPred[i] = 0x0;
-		alpha.ChoicePred[i] = 0x0;
-	}
-  alpha.PathHist = 0x0;  
-	alpha.LHistory = 0x0;
-	alpha.is_global = false;
-  alpha.BPred = false;
-}
-
 // This is the function to increment and decrement the three bit counter
 void three_bit_counter() {
 
@@ -95,6 +79,13 @@ void three_bit_counter() {
 
   else if(threeBitCtr == 7 && prediction == false)
       threeBitCtr = 7;
+
+  /*// Determine prediction as taken or not taken
+  if(threeBitCtr < 4)
+      prediction = true;
+  else // Counter is 4 or above
+      prediction = false;*/
+
 }
 
 // This is the function to increment and decrement the two bit counter
@@ -115,6 +106,12 @@ void two_bit_counter() {
 
   else if(twoBitCtr == 3 && prediction == false)
       twoBitCtr = 3;
+
+  /*   // Determine prediction as taken or not taken
+  if(twoBitCtr < 2)
+      prediction = true;
+  else // Counter is 2 or 3
+      prediction = false;*/
 }
 
 // This is the function to get the prediction in a table of size 4096
@@ -208,8 +205,9 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
       bpred_dir_create(class, bimod_size, 0, 0, 0);
 
   case BPredTaken:
-  case BPred_Alpha:
-    printf("Alpha Branch Predictor called!\n");
+  case BPred_JRF:
+
+  printf("alpha predictor");
     
     break;
   case BPredNotTaken:
@@ -268,8 +266,8 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
     }
 
   case BPredTaken:
-  case BPred_Alpha:
-    printf("Alpha Branch Predictor called!\n");
+  case BPred_JRF:
+    printf("Jordans Branch Predictor called!\n");
     
     break;
   case BPredNotTaken:
@@ -359,8 +357,8 @@ bpred_dir_create (
     break;
 
   case BPredTaken:
-  case BPred_Alpha:
-    printf("Alpha Branch Predictor called!\n");
+  case BPred_JRF:
+    printf("Jordans Branch Predictor called!\n");
     
     break;
   case BPredNotTaken:
@@ -398,8 +396,8 @@ bpred_dir_config(
     fprintf(stream, "pred_dir: %s: predict taken\n", name);
     break;
 
-  case BPred_Alpha:
-    fprintf(stream, "Alpha Branch Predictor called!\n");
+  case BPred_JRF:
+    fprintf(stream, "Jordans Branch Predictor called!\n");
 
     break;
 
@@ -444,7 +442,7 @@ bpred_config(struct bpred_t *pred,	/* branch predictor instance */
   case BPredTaken:
     bpred_dir_config (pred->dirpred.bimod, "taken", stream);
     break;
-  case BPred_Alpha:
+  case BPred_JRF:
     bpred_dir_config (pred->dirpred.bimod, "taken", stream);
     break;
   case BPredNotTaken:
@@ -485,11 +483,11 @@ bpred_reg_stats(struct bpred_t *pred,	/* branch predictor instance */
     case BPred2bit:
       name = "bpred_bimod";
       break;
-      case BPred_Alpha:
-      name = "bpred_Alpha";
-      break;
     case BPredTaken:
       name = "bpred_taken";
+      break;
+    case BPred_JRF:
+      name = "bpred_JRF";
       break;
     case BPredNotTaken:
       name = "bpred_nottaken";
@@ -655,7 +653,7 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,	/* branch dir predictor inst */
       p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
       break;
     case BPredTaken:
-    case BPred_Alpha:
+    case BPred_JRF:
     case BPredNotTaken:
       break;
     default:
@@ -740,7 +738,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
       break;
     case BPredTaken:
       return btarget;
-    case BPred_Alpha:
+    case BPred_JRF:
       return btarget;
     case BPredNotTaken:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
@@ -932,7 +930,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
   if (pred->class == BPredNotTaken || pred->class == BPredTaken)
     return;
   /* Can exit now if this is a stateless predictor */
-  if (pred->class == BPred_Alpha)
+  if (pred->class == BPred_JRF)
     return;
   /* 
    * Now we know the branch didn't use the ret-addr stack, and that this
