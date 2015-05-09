@@ -64,72 +64,96 @@
 // This is the function to increment and decrement the three bit counter
 void three_bit_counter() {
 
-    int threeBitCtr;
-    bool prediction;
+  int threeBitCtr;
+  bool prediction;
 
-    // Increment and decrement counter accordingly
-    if(threeBitCtr == 0 && prediction == true)
-        threeBitCtr = 0;
+  // Increment and decrement counter accordingly
+  if(threeBitCtr == 0 && prediction == true)
+      threeBitCtr = 0;
 
-    else if(threeBitCtr  > 0 && prediction == true)
-        threeBitCtr = twoBitCtr - 1;
+  else if(threeBitCtr  > 0 && prediction == true)
+      threeBitCtr = threeBitCtr - 1;
 
-    else if(threeBitCtr < 7 && prediction == false)
-        threeBitCtr = twoBitCtr + 1;
+  else if(threeBitCtr < 7 && prediction == false)
+      threeBitCtr = threeBitCtr + 1;
 
-    else if(threeBitCtr == 7 && prediction == false)
-        threeBitCtr = 7;
+  else if(threeBitCtr == 7 && prediction == false)
+      threeBitCtr = 7;
 
-    // Determine prediction as taken or not taken
-    if(threeBitCtr < 4)
-        prediction = true;
-    else // Counter is 4 or above
-        prediction = false;
+  /*// Determine prediction as taken or not taken
+  if(threeBitCtr < 4)
+      prediction = true;
+  else // Counter is 4 or above
+      prediction = false;*/
 
 }
 
 // This is the function to increment and decrement the two bit counter
 void two_bit_counter() {
 
-    int twoBitCtr;
-    bool prediction;
+  int twoBitCtr;
+  bool prediction;
 
-    // Increment and decrement counter accordingly
-    if(twoBitCtr == 0 && prediction == true)
-        twoBitCtr = 0;
+  // Increment and decrement counter accordingly
+  if(twoBitCtr == 0 && prediction == true)
+      twoBitCtr = 0;
 
-    else if(twoBitCtr  > 0 && prediction == true)
-        twoBitCtr = twoBitCtr - 1;
+  else if(twoBitCtr  > 0 && prediction == true)
+      twoBitCtr = twoBitCtr - 1;
 
-    else if(twoBitCtr < 3 && prediction == false)
-        twoBitCtr = twoBitCtr + 1;
+  else if(twoBitCtr < 3 && prediction == false)
+      twoBitCtr = twoBitCtr + 1;
 
-    else if(twoBitCtr == 3 && prediction == false)
-        twoBitCtr = 3;
+  else if(twoBitCtr == 3 && prediction == false)
+      twoBitCtr = 3;
 
-       // Determine prediction as taken or not taken
-    if(threeBitCtr < 2)
-        prediction = true;
-    else // Counter is 2 or 3
-        prediction = false;
+  /*   // Determine prediction as taken or not taken
+  if(twoBitCtr < 2)
+      prediction = true;
+  else // Counter is 2 or 3
+      prediction = false;*/
 }
 
 // This is the function to get the prediction in a table of size 4096
-int twelve_bit_get_pred(/*pass in the twelve bit index*/) {
+bool twelve_bit_get_pred(int PathHist, bool is_global) {
+	
+	unsigned int temp;
 
-  /* INSERT CODE */
+  PathHist &= PHistMask;
+  if (is_global) 
+		temp = alpha.GlobalPred[PathHist];
+	else if (!is_global)
+		temp = alpha.ChoicePred[PathHist];
+	if (temp >= 0x2)
+		alpha.BPred = true;
+	else if (temp <= 0x1)
+		alpha.BPred = false;
 
-  return 0; //will need to return the prediction, but 0 for now
+  return alpha.BPred; // return the prediction true=taken false=not-taken
 }
 
 // This is the function to get the prediction in a table of size 1024
-int ten_bit_get_pred(/*pass in the ten bit index*/) {
+bool ten_bit_get_pred(int LHistory) {
 
-  /* INSERT CODE */
+	unsigned int temp;
 
-  return 0; //will need to return the prediction, but 0 for now
+  LHistory &= LHistMask; 
+	temp = alpha.LocalPred[LHistory];
+	if (temp >= 0x4)
+		alpha.BPred = true;
+	else if (temp <= 0x3)
+		alpha.BPred = false;
+
+  return alpha.BPred; // return the prediction true=taken false=not-taken
 }
 
+void update_path_history(bool result) {
+	
+	if (result)
+		alpha.PathHist = ((alpha.PathHist >> 0x1) | (0x1 << 12));
+	else if (!result)
+		alpha.PathHist = ((alpha.PathHist >> 0x1) & 0x7FF);
+}
 /********************************************************/
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
