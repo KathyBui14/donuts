@@ -123,6 +123,20 @@ static int twolev_nelt = 4;
 static int twolev_config[4] =
   { /* l1size */1, /* l2size */1024, /* hist */8, /* xor */FALSE};
 
+//if (BPALPHA) { // FIXME - ECE587
+// 	local predictor
+//	static int twolev_nelt = 4;
+//	static int twolev_config[4] = { /* l1size */1024, /* l2size */1024, /* hist */10, /* xor */FALSE};
+
+//	choice predictor
+//	static int twolev_nelt = 4;
+//	static int twolev_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
+
+// 	global predictor
+//	static int twolev_nelt = 4;
+//	static int twolev_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
+//}
+
 /* combining predictor config (<meta_table_size> */
 static int comb_nelt = 1;
 static int comb_config[1] =
@@ -649,7 +663,7 @@ sim_reg_options(struct opt_odb_t *odb)
 "  Predictor `comb' combines a bimodal and a 2-level predictor.\n"
                );
 
-  opt_reg_string(odb, "-bpred",
+  opt_reg_string(odb, "-bpred", // FIXME - ECE587
 		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|BPALPHA}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
@@ -661,6 +675,13 @@ sim_reg_options(struct opt_odb_t *odb)
 		   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int_list(odb, "-bpred:2lev",
+                   "2-level predictor config "
+		   "(<l1size> <l2size> <hist_size> <xor>)",
+                   twolev_config, twolev_nelt, &twolev_nelt,
+		   /* default */twolev_config,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+                   
+  opt_reg_int_list(odb, "-bpred:BPALPHA",
                    "2-level predictor config "
 		   "(<l1size> <l2size> <hist_size> <xor>)",
                    twolev_config, twolev_nelt, &twolev_nelt,
