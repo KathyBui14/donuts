@@ -340,6 +340,7 @@ bpred_dir_create (
 	  		pred_dir->config.two.l2table[cnt] = flipflop;
 	  		flipflop = 3 - flipflop;
 			}
+    /* TODO: Add 3 bit here for furture */
 
       break;
     }
