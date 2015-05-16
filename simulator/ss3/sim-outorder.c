@@ -617,6 +617,7 @@ sim_reg_options(struct opt_odb_t *odb)
 	       );
 
   /* ifetch options */
+
   opt_reg_int(odb, "-fetch:ifqsize", "instruction fetch queue size (in insts)",
 	      &ruu_ifq_size, /* default */4,
 	      /* print */TRUE, /* format */NULL);
@@ -899,10 +900,24 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       pred = NULL;
       pred_perfect = TRUE;
     }
-  else if (!mystricmp(pred_type, "BPALPHA"))
+  else if (!mystricmp(pred_type, "BPALPHA")) // FIXME - ECE587
     {
-      /* static predictor, not taken */
-      pred = bpred_create_alpha();
+      /* 2-level adaptive predictor, bpred_create() checks args */
+      if (twolev_nelt != 4)
+				fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
+      if (btb_nelt != 2)
+				fatal("bad btb config (<num_sets> <associativity>)");
+
+      pred = bpred_create(BPred2Level,
+			  /* bimod table size */0,
+			  /* 2lev l1 size */twolev_config[0],
+			  /* 2lev l2 size */twolev_config[1],
+			  /* meta table size */0,
+			  /* history reg size */twolev_config[2],
+			  /* history xor address */twolev_config[3],
+			  /* btb sets */btb_config[0],
+			  /* btb assoc */btb_config[1],
+			  /* ret-addr stack size */ras_size);
     }
   else if (!mystricmp(pred_type, "taken"))
     {
