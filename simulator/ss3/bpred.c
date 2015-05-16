@@ -176,7 +176,7 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
     }
 
   case BPredTaken:
-  case BPred_Alpha: // FIXME alpha
+  case BPred_Alpha: // FIXME - ECE587
     {
       int i;
 
