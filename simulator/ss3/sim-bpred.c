@@ -200,9 +200,10 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
   else if (!mystricmp(pred_type, "BPALPHA"))
     {
       /* static predictor, Jordan */
-      /* FIXME - ALPHA PREDICTOR PARAMETERS */
-      // ?? pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
       // commented out - pred = bpred_create_alpha();
+
+      /* FIXME - ALPHA PREDICTOR PARAMETERS */
+      // pred = bpred_create(BPred_Alpha, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   else if (!mystricmp(pred_type, "bimod"))
     {
