@@ -110,8 +110,15 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
 
   case BPredTaken:
   case BPred_Alpha: // FIXME - ECE587
-    printf("Alpha Branch Predictor called!\n");
-    pred->dirpred.twolev = bpred_dir_create(class, l1size, l2size, shift_width, xor);
+    printf("Alpha Branch Predictor - Local Predictor called!\n");
+    pred->dirpred.local = bpred_dir_create(class, l1size, l2size, shift_width, xor);
+
+    printf("Alpha Branch Predictor - Global Predictor called!\n");
+    pred->dirpred.global = bpred_dir_create(class, l1size, l2size, shift_width, xor);
+
+    printf("Alpha Branch Predictor - Choice Predictor called!\n");
+    pred->dirpred.choice = bpred_dir_create(class, l1size, l2size, shift_width, xor);
+
     break;
   case BPredNotTaken:
     /* no other state */
@@ -421,10 +428,21 @@ bpred_config(struct bpred_t *pred,	/* branch predictor instance */
     bpred_dir_config (pred->dirpred.bimod, "taken", stream);
     break;
   case BPred_Alpha: // FIXME - ECE587
-    bpred_dir_config (pred->dirpred.twolev, "2lev", stream);
+    bpred_dir_config (pred->dirpred.local, "local", stream);
     fprintf(stream, "btb: %d sets x %d associativity", 
 	    pred->btb.sets, pred->btb.assoc);
     fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+
+    bpred_dir_config (pred->dirpred.global, "global", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+	    pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+
+    bpred_dir_config (pred->dirpred.choice, "choice", stream);
+    fprintf(stream, "btb: %d sets x %d associativity", 
+	    pred->btb.sets, pred->btb.assoc);
+    fprintf(stream, "ret_stack: %d entries", pred->retstack.size);
+
     break;
   case BPredNotTaken:
     bpred_dir_config (pred->dirpred.bimod, "nottaken", stream);
@@ -758,8 +776,13 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
 			{
 	  		dir_update_ptr->pdir1 =
-	    	bpred_dir_lookup (pred->dirpred.twolev, baddr);
+	    	  bpred_dir_lookup (pred->dirpred.local, baddr);
+        dir_update_ptr->pdir1 =
+	    	 bpred_dir_lookup (pred->dirpred.global, baddr);
+        dir_update_ptr->pdir1 =
+	    	 bpred_dir_lookup (pred->dirpred.choice, baddr);
 			}
+
 			break;
     case BPredNotTaken:
       if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) != (F_CTRL|F_UNCOND))
@@ -975,16 +998,34 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
       (pred->class == BPred2Level || pred->class == BPredComb || pred->class == BPred_Alpha)) // FIXME - ECE587
     {
       int l1index, shift_reg;
-      
-      /* also update appropriate L1 history register */
-      l1index =
-	(baddr >> MD_BR_SHIFT) & (pred->dirpred.twolev->config.two.l1size - 1);
-      shift_reg =
-	(pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
-      pred->dirpred.twolev->config.two.shiftregs[l1index] =
-	shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
-    }
-
+      if(pred->class == BPred2Level || pred->class == BPredComb)
+      {
+        /* also update appropriate L1 history register */
+        l1index =
+	      (baddr >> MD_BR_SHIFT) & (pred->dirpred.twolev->config.two.l1size - 1);
+          shift_reg =
+	          (pred->dirpred.twolev->config.two.shiftregs[l1index] << 1) | (!!taken);
+         pred->dirpred.twolev->config.two.shiftregs[l1index] =
+	          shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
+       }
+      else if(pred->class == BPred_Alpha)
+      {
+        /* Local - also update appropriate L1 history register */
+        l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.local->config.two.l1size - 1);
+        shift_reg =(pred->dirpred.local->config.two.shiftregs[l1index] << 1) | (!!taken);
+        pred->dirpred.local->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.local->config.two.shift_width) - 1);
+       
+        /* Global - also update appropriate L1 history register */
+        l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.global->config.two.l1size - 1);
+        shift_reg =(pred->dirpred.global->config.two.shiftregs[l1index] << 1) | (!!taken);
+        pred->dirpred.global->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.global->config.two.shift_width) - 1);
+        
+        /* Choice - also update appropriate L1 history register */
+        l1index = (baddr >> MD_BR_SHIFT) & (pred->dirpred.choice->config.two.l1size - 1);
+        shift_reg =(pred->dirpred.choice->config.two.shiftregs[l1index] << 1) | (!!taken);
+        pred->dirpred.choice->config.two.shiftregs[l1index] = shift_reg & ((1 << pred->dirpred.choice->config.two.shift_width) - 1);
+       }        
+}
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
   if (taken)
     {
