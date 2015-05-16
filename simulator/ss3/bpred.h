@@ -142,6 +142,10 @@ struct bpred_t {
     struct bpred_dir_t *bimod;	  /* first direction predictor */
     struct bpred_dir_t *twolev;	  /* second direction predictor */
     struct bpred_dir_t *meta;	  /* meta predictor */
+    // FIXME - ECE587
+    struct bpred_dir_t *local;
+    struct bpred_dir_t *choice;
+    struct bpred_dir_t *global;
   } dirpred;
 
   struct {
@@ -179,7 +183,7 @@ struct bpred_update_t {
   char *pdir1;		/* direction-1 predictor counter */
   char *pdir2;		/* direction-2 predictor counter */
   char *pmeta;		/* meta predictor counter */
-  struct {		/* predicted directions */
+  struct {		/* predicted directions - FIXME - ECE 587 - MAY NEED TO ADD TO LIST? */
     unsigned int ras    : 1;	/* RAS used */
     unsigned int bimod  : 1;    /* bimodal predictor */
     unsigned int twolev : 1;    /* 2-level predictor */
