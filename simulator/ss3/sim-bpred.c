@@ -188,18 +188,21 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
   if (!mystricmp(pred_type, "taken"))
     {
       /* static predictor, not taken */
-      pred = bpred_create(BPredTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      /* FIXME - ALPHA PREDICTOR PARAMETERS */
+      pred = bpred_create(BPredTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   else if (!mystricmp(pred_type, "nottaken"))
     {
       /* static predictor, taken */
-      pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      /* FIXME - ALPHA PREDICTOR PARAMETERS */
+      pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   else if (!mystricmp(pred_type, "BPALPHA"))
     {
       /* static predictor, Jordan */
-
-      pred = bpred_create_alpha();
+      /* FIXME - ALPHA PREDICTOR PARAMETERS */
+      // ?? pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      // commented out - pred = bpred_create_alpha();
     }
   else if (!mystricmp(pred_type, "bimod"))
     {
@@ -218,7 +221,15 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
 			  /* history xor address */0,
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+			  /* ret-addr stack size */ras_size,
+
+        /* g1 size */0,
+        /* g2 size */0,
+        /* global history reg size */0,
+        /* c1 size */0,
+        /* c2 size */0,
+        /* choice history reg size */0
+        );
     }
   else if (!mystricmp(pred_type, "2lev"))
     {
@@ -237,7 +248,16 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
 			  /* history xor address */twolev_config[3],
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+			  /* ret-addr stack size */ras_size,
+    
+        /* FIXME - ALPHA PREDICTOR PARAMETERS */
+        /* g1 size */0,
+        /* g2 size */0,
+        /* global history reg size */0,
+        /* c1 size */0,
+        /* c2 size */0,
+        /* choice history reg size */0
+    );
     }
   else if (!mystricmp(pred_type, "comb"))
     {
@@ -260,7 +280,16 @@ sim_check_options(struct opt_odb_t *odb, int argc, char **argv)
 			  /* history xor address */twolev_config[3],
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size);
+			  /* ret-addr stack size */ras_size,
+    
+        /* FIXME - ALPHA PREDICTOR PARAMETERS */
+        /* g1 size */0,
+        /* g2 size */0,
+        /* global history reg size */0,
+        /* c1 size */0,
+        /* c2 size */0,
+        /* choice history reg size */0
+    );
     }
   else
     fatal("cannot parse predictor type `%s'", pred_type);

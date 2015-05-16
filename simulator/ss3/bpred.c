@@ -62,7 +62,7 @@
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
-/* create a branch predictor */
+/* create a branch predictor - 16 parameters */
 struct bpred_t *			/* branch predictory instance */
 bpred_create(enum bpred_class class,	/* type of predictor to create */
 	     unsigned int bimod_size,	/* bimod table size */
@@ -73,7 +73,17 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
 	     unsigned int xor,  	/* history xor address flag */
 	     unsigned int btb_sets,	/* number of sets in BTB */ 
 	     unsigned int btb_assoc,	/* BTB associativity */
-	     unsigned int retstack_size) /* num entries in ret-addr stack */
+	     unsigned int retstack_size, /* num entries in ret-addr stack */
+
+       /* FIXME - ALPHA PREDICTOR PARAMETERS */
+       unsigned int g1size,   /* 2lev g1 table size */
+       unsigned int g2size,   /* 2lev g2 table size */
+       unsigned int globalHistReg, /* global history register width */
+        
+       unsigned int c1size,   /* 2lev c1 table size */
+       unsigned int c2size,    /* 2lev c2 table size */
+       unsigned int choicelHistReg /* choice history register width */
+      )
 {
   struct bpred_t *pred;
 
