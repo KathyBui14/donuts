@@ -222,12 +222,14 @@ bpred_dir_create (
       if (!pred_dir->config.two.l2table)
 	fatal("cannot allocate second level table");
 
+  /* FIXME - ECE587 */
+  /* Implement 3-bit saturating counter in 2 level local predictor */
       /* initialize counters to weakly this-or-that */
-      flipflop = 1;
+      flipflop = 3;
       for (cnt = 0; cnt < l2size; cnt++)
 	{
 	  pred_dir->config.two.l2table[cnt] = flipflop;
-	  flipflop = 3 - flipflop;
+	  flipflop = 7 - flipflop;
 	}
 
       break;
@@ -589,7 +591,10 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
 	  dir_update_ptr->pmeta = meta;
 	  dir_update_ptr->dir.meta  = (*meta >= 2);
 	  dir_update_ptr->dir.bimod = (*bimod >= 2);
-	  dir_update_ptr->dir.twolev  = (*twolev >= 2);
+
+    /* FIXME - ECE587 */
+	 // dir_update_ptr->dir.twolev  = (*twolev >= 2);
+    dir_update_ptr->dir.twolev  = (*twolev >= 4); // change for 3-bit sat ctr
 	  if (*meta >= 2)
 	    {
 	      dir_update_ptr->pdir1 = twolev;
@@ -702,17 +707,47 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
   /* otherwise we have a conditional branch */
   if (pbtb == NULL)
     {
-      /* BTB miss -- just return a predicted direction */
-      return ((*(dir_update_ptr->pdir1) >= 2)
-	      ? /* taken */ 1
-	      : /* not taken */ 0);
+      /* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
+      /* Use 2-bit for global predictor and 3-bit for local predictor */
+
+      ///* BTB miss -- just return a predicted direction */
+     // return ((*(dir_update_ptr->pdir1) >= 2)
+	     // ? /* taken */ 1
+	    //  : /* not taken */ 0);
+      if(*(dir_update_ptr->pmeta) >= 2)
+      {
+        return ((*(dir_update_ptr->pdir1) >= 4)
+            ? /* taken */ 1
+	          : /* not taken */ 0);
+      }
+      else
+      {
+        return ((*(dir_update_ptr->pdir1) >= 2)
+            ? /* taken */ 1
+	          : /* not taken */ 0);
+      }
     }
   else
     {
-      /* BTB hit, so return target if it's a predicted-taken branch */
-      return ((*(dir_update_ptr->pdir1) >= 2)
-	      ? /* taken */ pbtb->target
-	      : /* not taken */ 0);
+      /* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
+      /* Use 2-bit for global predictor and 3-bit for local predictor */
+
+      ///* BTB hit, so return target if it's a predicted-taken branch */
+      //return ((*(dir_update_ptr->pdir1) >= 2)
+	    //  ? /* taken */ pbtb->target
+	    // : /* not taken */ 0);
+     if(*(dir_update_ptr->pmeta) >= 2)
+      {
+        return ((*(dir_update_ptr->pdir1) >= 4)
+            ? /* taken */ pbtb->target
+	          : /* not taken */ 0);
+      }
+      else
+      {
+        return ((*(dir_update_ptr->pdir1) >= 2)
+            ? /* taken */ pbtb->target
+	          : /* not taken */ 0);
+      }
     }
 }
 
@@ -913,16 +948,31 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
   /* update state (but not for jumps) */
   if (dir_update_ptr->pdir1)
     {
-      if (taken)
-	{
-	  if (*dir_update_ptr->pdir1 < 3)
-	    ++*dir_update_ptr->pdir1;
-	}
-      else
-	{ /* not taken */
-	  if (*dir_update_ptr->pdir1 > 0)
-	    --*dir_update_ptr->pdir1;
-	}
+    if (taken)
+	  {
+      /* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
+      /* Use 2-bit for global predictor and 3-bit for local predictor */
+
+	     //if (*dir_update_ptr->pdir1 < 3)
+	     //  ++*dir_update_ptr->pdir1;
+       /* 3-bit sat ctr for 2lev predictor as pdir1 */
+       if (*dir_update_ptr->pmeta >= 2)
+       {
+           if (*dir_update_ptr->pdir1 < 7)
+	           ++*dir_update_ptr->pdir1;
+	     }
+       else
+       {
+           /* 2-bit sat ctr for bimod predictor/global as pdir1 */
+           if (*dir_update_ptr->pdir1 < 3)
+	           ++*dir_update_ptr->pdir1;
+       }
+    }  
+   else
+	 { /* not taken */
+	   if (*dir_update_ptr->pdir1 > 0)
+	     --*dir_update_ptr->pdir1;
+  	}
     }
 
   /* combining predictor also updates second predictor and meta predictor */
@@ -931,8 +981,23 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
     {
       if (taken)
 	{
-	  if (*dir_update_ptr->pdir2 < 3)
-	    ++*dir_update_ptr->pdir2;
+    /* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
+      /* Use 2-bit for global predictor and 3-bit for local predictor */
+
+	  //if (*dir_update_ptr->pdir2 < 3)
+ 	  //  ++*dir_update_ptr->pdir2;
+    if(*dir_update_ptr->pmeta >= 2)
+    {
+        /* 2 bit sat ctr for bimodal/global predictor for pdir2 */
+        if (*dir_update_ptr->pdir2 < 3)
+ 	        ++*dir_update_ptr->pdir2;
+    }
+    else
+    {
+        /* 3 bit sat ctr for bimodal/global predictor for pdir2 */
+        if (*dir_update_ptr->pdir2 < 7)
+ 	        ++*dir_update_ptr->pdir2;
+    }
 	}
       else
 	{ /* not taken */
