@@ -110,7 +110,7 @@ static int ruu_branch_penalty;
 /* speed of front-end of machine relative to execution core */
 static int fetch_speed;
 
-/* branch predictor type {nottaken|taken|perfect|bimod|2lev|BPALPHA} */
+/* branch predictor type {nottaken|taken|perfect|bimod|2lev} */
 static char *pred_type;
 
 /* bimodal predictor config (<table_size>) */
@@ -122,20 +122,6 @@ static int bimod_config[1] =
 static int twolev_nelt = 4;
 static int twolev_config[4] =
   { /* l1size */1024, /* l2size */1024, /* hist */10, /* xor */FALSE};
-  
-// FIXME - ECE587
-// 	local predictor
-static int local_nelt = 4;
-static int local_config[4] = { /* l1size */1024, /* l2size */1024, /* hist */10, /* xor */FALSE};
- 
-//	choice predictor
-static int global_nelt = 4;
-static int global_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
- 
-// 	global predictor
-static int choice_nelt = 4;
-static int choice_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
-
 
 /* combining predictor config (<meta_table_size> */
 static int comb_nelt = 1;
@@ -664,7 +650,7 @@ sim_reg_options(struct opt_odb_t *odb)
                );
 
   opt_reg_string(odb, "-bpred",
-		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb|BPALPHA}",
+		 "branch predictor type {nottaken|taken|perfect|bimod|2lev|comb}",
                  &pred_type, /* default */"bimod",
                  /* print */TRUE, /* format */NULL);
 
@@ -679,13 +665,6 @@ sim_reg_options(struct opt_odb_t *odb)
 		   "(<l1size> <l2size> <hist_size> <xor>)",
                    twolev_config, twolev_nelt, &twolev_nelt,
 		   /* default */twolev_config,
-                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
-
-  opt_reg_int_list(odb, "-bpred:BPALPHA", // FIXME - ECE587
-                   "Alpha predictor config "
-		   "(<l1size> <l2size> <hist_size> <xor>)",
-                   local_config, local_nelt, &local_nelt,
-		   /* default */local_config,
                    /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
   opt_reg_int_list(odb, "-bpred:comb",
@@ -921,45 +900,15 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       pred = NULL;
       pred_perfect = TRUE;
     }
-  else if (!mystricmp(pred_type, "BPALPHA")) // FIXME - ECE587
-    {
-      /* 2-level adaptive predictor, bpred_create() checks args */
-      if (twolev_nelt != 4)
-				fatal("bad 2-level pred config (<l1size> <l2size> <hist_size> <xor>)");
-      if (btb_nelt != 2)
-				fatal("bad btb config (<num_sets> <associativity>)");
-
-      pred = bpred_create(BPred_Alpha,
-			  /* bimod table size */0,
-			  /* 2lev l1 size */local_config[0],
-			  /* 2lev l2 size */local_config[1],
-			  /* meta table size */0,
-			  /* history reg size */local_config[2],
-			  /* history xor address */FALSE,
-			  /* btb sets */btb_config[0],
-			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size,
-
-        /* FIXME - ALPHA PREDICTOR PARAMETERS */
-        /* g1 size */global_config[0],
-        /* g2 size */global_config[1],
-        /* global history reg size */global_config[2],
-        /* c1 size */choice_config[0],
-        /* c2 size */choice_config[1],
-        /* choice history reg size */choice_config[2]
-    );
-    }
   else if (!mystricmp(pred_type, "taken"))
     {
       /* static predictor, not taken */
-       /* FIXME - ALPHA PREDICTOR PARAMETERS */
-      pred = bpred_create(BPredTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      pred = bpred_create(BPredTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   else if (!mystricmp(pred_type, "nottaken"))
     {
       /* static predictor, taken */
-       /* FIXME - ALPHA PREDICTOR PARAMETERS */
-      pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+      pred = bpred_create(BPredNotTaken, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
   else if (!mystricmp(pred_type, "bimod"))
     {
@@ -979,16 +928,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 			  /* history xor address */0,
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size,
-        
-        /* FIXME - ALPHA PREDICTOR PARAMETERS */
-        /* g1 size */0,
-        /* g2 size */0,
-        /* global history reg size */0,
-        /* c1 size */0,
-        /* c2 size */0,
-        /* choice history reg size */0
-    );
+			  /* ret-addr stack size */ras_size);
     }
   else if (!mystricmp(pred_type, "2lev"))
     {
@@ -1007,15 +947,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 			  /* history xor address */twolev_config[3],
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size,
-
-         /* FIXME - ALPHA PREDICTOR PARAMETERS */
-        /* g1 size */0,
-        /* g2 size */0,
-        /* global history reg size */0,
-        /* c1 size */0,
-        /* c2 size */0,
-        /* choice history reg size */0);
+			  /* ret-addr stack size */ras_size);
     }
   else if (!mystricmp(pred_type, "comb"))
     {
@@ -1038,15 +970,7 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 			  /* history xor address */twolev_config[3],
 			  /* btb sets */btb_config[0],
 			  /* btb assoc */btb_config[1],
-			  /* ret-addr stack size */ras_size,
-
-        /* FIXME - ALPHA PREDICTOR PARAMETERS */
-        /* g1 size */0,
-        /* g2 size */0,
-        /* global history reg size */0,
-        /* c1 size */0,
-        /* c2 size */0,
-        /* choice history reg size */0);
+			  /* ret-addr stack size */ras_size);
     }
   else
     fatal("cannot parse predictor type `%s'", pred_type);

@@ -104,8 +104,7 @@ enum bpred_class {
   BPred2bit,			/* 2-bit saturating cntr pred (dir mapped) */
   BPredTaken,			/* static predict taken */
   BPredNotTaken,		/* static predict not taken */
-  BPred_NUM, 
-  BPred_Alpha
+  BPred_NUM
 };
 
 /* an entry in a BTB */
@@ -142,10 +141,6 @@ struct bpred_t {
     struct bpred_dir_t *bimod;	  /* first direction predictor */
     struct bpred_dir_t *twolev;	  /* second direction predictor */
     struct bpred_dir_t *meta;	  /* meta predictor */
-    // FIXME - ECE587
-    struct bpred_dir_t *local;
-    struct bpred_dir_t *choice;
-    struct bpred_dir_t *global;
   } dirpred;
 
   struct {
@@ -183,7 +178,7 @@ struct bpred_update_t {
   char *pdir1;		/* direction-1 predictor counter */
   char *pdir2;		/* direction-2 predictor counter */
   char *pmeta;		/* meta predictor counter */
-  struct {		/* predicted directions - FIXME - ECE 587 - MAY NEED TO ADD TO LIST? */
+  struct {		/* predicted directions */
     unsigned int ras    : 1;	/* RAS used */
     unsigned int bimod  : 1;    /* bimodal predictor */
     unsigned int twolev : 1;    /* 2-level predictor */
@@ -191,7 +186,7 @@ struct bpred_update_t {
   } dir;
 };
 
-/* create a branch predictor - 16 parameters */
+/* create a branch predictor */
 struct bpred_t *			/* branch predictory instance */
 bpred_create(enum bpred_class class,	/* type of predictor to create */
 	     unsigned int bimod_size,	/* bimod table size */
@@ -202,19 +197,9 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
 	     unsigned int xor,		/* history xor address flag */
 	     unsigned int btb_sets,	/* number of sets in BTB */ 
 	     unsigned int btb_assoc,	/* BTB associativity */
-	     unsigned int retstack_size, /* num entries in ret-addr stack */
-    
-       /* FIXME - ALPHA PREDICTOR PARAMETERS */
-       unsigned int g1size,   /* 2lev g1 table size */
-       unsigned int g2size,   /* 2lev g2 table size */
-       unsigned int globalHistReg, /* global history register width */
-        
-       unsigned int c1size,   /* 2lev c1 table size */
-       unsigned int c2size,    /* 2lev c2 table size */
-       unsigned int choicelHistReg /* choice history register width */
-      );
+	     unsigned int retstack_size);/* num entries in ret-addr stack */
 
-/* create a branch direction predictor - 16 parameters */
+/* create a branch direction predictor */
 struct bpred_dir_t *		/* branch direction predictor instance */
 bpred_dir_create (
   enum bpred_class class,	/* type of predictor to create */
