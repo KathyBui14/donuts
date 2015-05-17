@@ -122,6 +122,20 @@ static int bimod_config[1] =
 static int twolev_nelt = 4;
 static int twolev_config[4] =
   { /* l1size */1, /* l2size */1024, /* hist */8, /* xor */FALSE};
+  
+// FIXME - ECE587
+// 	local predictor
+static int local_nelt = 4;
+static int local_config[4] = { /* l1size */1024, /* l2size */1024, /* hist */10, /* xor */FALSE};
+ 
+//	choice predictor
+static int global_nelt = 4;
+static int global_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
+ 
+// 	global predictor
+static int choice_nelt = 4;
+static int choice_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /* xor */FALSE};
+
 
 /* combining predictor config (<meta_table_size> */
 static int comb_nelt = 1;
@@ -667,6 +681,13 @@ sim_reg_options(struct opt_odb_t *odb)
 		   /* default */twolev_config,
                    /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
 
+  opt_reg_int_list(odb, "-bpred:BPALPHA", // FIXME - ECE587
+                   "Alpha predictor config "
+		   "(<l1size> <l2size> <hist_size> <xor>)",
+                   local_config, local_nelt, &local_nelt,
+		   /* default */local_config,
+                   /* print */TRUE, /* format */NULL, /* !accrue */FALSE);
+
   opt_reg_int_list(odb, "-bpred:comb",
 		   "combining predictor config (<meta_table_size>)",
 		   comb_config, comb_nelt, &comb_nelt,
@@ -908,10 +929,10 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
       if (btb_nelt != 2)
 				fatal("bad btb config (<num_sets> <associativity>)");
 
-      pred = bpred_create(BPred2Level,
+      pred = bpred_create(BPred_Alpha,
 			  /* bimod table size */0,
-			  /* 2lev l1 size */twolev_config[0],
-			  /* 2lev l2 size */twolev_config[1],
+			  /* 2lev l1 size */local_config[0],
+			  /* 2lev l2 size */local_config[1],
 			  /* meta table size */0,
 			  /* history reg size */twolev_config[2],
 			  /* history xor address */twolev_config[3],
@@ -920,12 +941,12 @@ sim_check_options(struct opt_odb_t *odb,        /* options database */
 			  /* ret-addr stack size */ras_size,
 
         /* FIXME - ALPHA PREDICTOR PARAMETERS */
-        /* g1 size */0,
-        /* g2 size */0,
-        /* global history reg size */0,
-        /* c1 size */0,
-        /* c2 size */0,
-        /* choice history reg size */0
+        /* g1 size */global_config[0],
+        /* g2 size */global_config[1],
+        /* global history reg size */global_config[2],
+        /* c1 size */choice_config[0],
+        /* c2 size */choice_config[1],
+        /* choice history reg size */choice_config[2]
     );
     }
   else if (!mystricmp(pred_type, "taken"))
