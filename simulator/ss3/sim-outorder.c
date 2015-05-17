@@ -116,12 +116,12 @@ static char *pred_type;
 /* bimodal predictor config (<table_size>) */
 static int bimod_nelt = 1;
 static int bimod_config[1] =
-  { /* bimod tbl size */2048 };
+  { /* bimod tbl size */4096 };
 
 /* 2-level predictor config (<l1size> <l2size> <hist_size> <xor>) */
 static int twolev_nelt = 4;
 static int twolev_config[4] =
-  { /* l1size */1, /* l2size */1024, /* hist */8, /* xor */FALSE};
+  { /* l1size */1024, /* l2size */1024, /* hist */10, /* xor */FALSE};
   
 // FIXME - ECE587
 // 	local predictor
@@ -140,7 +140,7 @@ static int choice_config[4] = { /* l1size */1, /* l2size */4096, /* hist */12, /
 /* combining predictor config (<meta_table_size> */
 static int comb_nelt = 1;
 static int comb_config[1] =
-  { /* meta_table_size */1024 };
+  { /* meta_table_size */4096 };
 
 /* return address stack (RAS) size */
 static int ras_size = 8;
