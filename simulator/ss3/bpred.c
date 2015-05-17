@@ -724,7 +724,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
      // return ((*(dir_update_ptr->pdir1) >= 2)
 	     // ? /* taken */ 1
 	    //  : /* not taken */ 0);
-      if(*(dir_update_ptr->pmeta) >= 2)
+     // if(*(dir_update_ptr->pmeta) >= 2)
       if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
       {
         return ((*(dir_update_ptr->pdir1) >= 4)
