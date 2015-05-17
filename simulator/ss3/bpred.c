@@ -92,7 +92,7 @@ bpred_create(enum bpred_class class,	/* type of predictor to create */
     pred->dirpred.twolev = 
       bpred_dir_create(BPred2Level, l1size, l2size, shift_width, xor);
 
-    /* metapredictor component */
+    /* metapredictor component = global predictor */
     pred->dirpred.meta = 
       bpred_dir_create(BPred2bit, meta_size, 0, 0, 0);
 
@@ -489,6 +489,13 @@ bpred_after_priming(struct bpred_t *bpred)
   ((((ADDR) >> 19) ^ ((ADDR) >> MD_BR_SHIFT)) & ((PRED)->config.bimod.size-1))
     /* was: ((baddr >> 16) ^ baddr) & (pred->dirpred.bimod.size-1) */
 
+
+/* FIXME - ECE587 : Parameters for Global History Branch Prediction */
+#define GlobalHistRegWidth 12
+int global_hist_reg = 0;
+#define GLOBAL_META_PRED_INDEX (global_hist_reg & ((1 << GlobalHistRegWidth) -1))
+
+
 /* predicts a branch direction */
 char *						/* pointer to counter */
 bpred_dir_lookup(struct bpred_dir_t *pred_dir,	/* branch dir predictor inst */
@@ -533,7 +540,10 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,	/* branch dir predictor inst */
       }
       break;
     case BPred2bit:
-      p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
+        /* FIXME - ECE587 : global branch history index to global and meta choice predictor */
+        /* meta choice predictor uses BPred2bit class */
+       //p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
+        p = &pred_dir->config.bimod.table[GLOBAL_META_PRED_INDEX];
       break;
     case BPredTaken:
     case BPredNotTaken:
@@ -715,6 +725,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
 	     // ? /* taken */ 1
 	    //  : /* not taken */ 0);
       if(*(dir_update_ptr->pmeta) >= 2)
+      if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
       {
         return ((*(dir_update_ptr->pdir1) >= 4)
             ? /* taken */ 1
@@ -736,7 +747,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
       //return ((*(dir_update_ptr->pdir1) >= 2)
 	    //  ? /* taken */ pbtb->target
 	    // : /* not taken */ 0);
-     if(*(dir_update_ptr->pmeta) >= 2)
+     if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
       {
         return ((*(dir_update_ptr->pdir1) >= 4)
             ? /* taken */ pbtb->target
@@ -874,6 +885,9 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	shift_reg & ((1 << pred->dirpred.twolev->config.two.shift_width) - 1);
     }
 
+    global_hist_reg = (global_hist_reg << 1) | (!!taken);
+    global_hist_reg = global_hist_reg & ((1<< GlobalHistRegWidth) -1);
+
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
   if (taken)
     {
@@ -956,7 +970,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	     //if (*dir_update_ptr->pdir1 < 3)
 	     //  ++*dir_update_ptr->pdir1;
        /* 3-bit sat ctr for 2lev predictor as pdir1 */
-       if (*dir_update_ptr->pmeta >= 2)
+       if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
        {
            if (*dir_update_ptr->pdir1 < 7)
 	           ++*dir_update_ptr->pdir1;
@@ -986,16 +1000,16 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 
 	  //if (*dir_update_ptr->pdir2 < 3)
  	  //  ++*dir_update_ptr->pdir2;
-    if(*dir_update_ptr->pmeta >= 2)
+    if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) < 2)
     {
-        /* 2 bit sat ctr for bimodal/global predictor for pdir2 */
-        if (*dir_update_ptr->pdir2 < 3)
+        /* 3 bit sat ctr for bimodal/global predictor for pdir2 */
+        if (*dir_update_ptr->pdir2 < 7)
  	        ++*dir_update_ptr->pdir2;
     }
     else
     {
-        /* 3 bit sat ctr for bimodal/global predictor for pdir2 */
-        if (*dir_update_ptr->pdir2 < 7)
+        /* 2 bit sat ctr for bimodal/global predictor for pdir2 */
+        if (*dir_update_ptr->pdir2 < 3)
  	        ++*dir_update_ptr->pdir2;
     }
 	}
