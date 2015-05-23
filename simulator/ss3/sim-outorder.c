@@ -86,7 +86,7 @@ static struct regs_t regs;
 /* simulated memory */
 static struct mem_t *mem = NULL;
 
-FILE * tmp;
+//FILE * tmp;
 
 /*
  * simulator options

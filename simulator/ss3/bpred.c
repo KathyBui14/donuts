@@ -59,6 +59,9 @@
 #include "machine.h"
 #include "bpred.h"
 
+
+//FILE * tmp;
+
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
@@ -796,6 +799,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	     enum md_opcode op,		/* opcode of instruction */
 	     struct bpred_update_t *dir_update_ptr)/* pred state pointer */
 {
+	fprintf(tmp,"in bpred.c...");
   struct bpred_btb_ent_t *pbtb = NULL;
   struct bpred_btb_ent_t *lruhead = NULL, *lruitem = NULL;
   int index, i;
