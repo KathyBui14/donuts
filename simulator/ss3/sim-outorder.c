@@ -2228,10 +2228,10 @@ ruu_commit(void)
 	  && bpred_spec_update == spec_CT
 	  && (MD_OP_FLAGS(rs->op) & F_CTRL))
 	{
-		
-		fprintf(tmp, "\nCOMMIT STAGE::branch address: %x\tres. branch target: %x\ttaken?: %x\tpred. taken?: %x\tcorrect?: %x\top_code: %x\t",
-							rs->PC, rs->next_PC, (rs->next_PC != (rs->PC + sizeof(md_inst_t))), (rs->pred_PC != (rs->PC + sizeof(md_inst_t))), 
-							(rs->pred_PC == rs->next_PC), (rs->op));
+		// FIXME - printing debug info
+		fprintf(tmp, "\nbranch address(PC): %x\ttaken?: %x\tpred. taken?: %x\tcorrect?: %x\t", rs->PC, (rs->next_PC != (rs->PC + 
+									sizeof(md_inst_t))), (rs->pred_PC != (rs->PC + sizeof(md_inst_t))), (rs->pred_PC == rs->next_PC));
+									
 	  bpred_update(pred,
 		       /* branch address */rs->PC,
 		       /* actual target address */rs->next_PC,

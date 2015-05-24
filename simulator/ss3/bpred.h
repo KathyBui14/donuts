@@ -63,6 +63,7 @@
 
 
 FILE * tmp;
+
 /*
  * This module implements a number of branch predictor mechanisms.  The
  * following predictors are supported:

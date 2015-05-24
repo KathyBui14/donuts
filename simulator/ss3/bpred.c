@@ -59,9 +59,6 @@
 #include "machine.h"
 #include "bpred.h"
 
-
-//FILE * tmp;
-
 /* turn this on to enable the SimpleScalar 2.0 RAS bug */
 /* #define RAS_BUG_COMPATIBLE */
 
@@ -799,7 +796,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	     enum md_opcode op,		/* opcode of instruction */
 	     struct bpred_update_t *dir_update_ptr)/* pred state pointer */
 {
-	fprintf(tmp,"in bpred.c...");
+
   struct bpred_btb_ent_t *pbtb = NULL;
   struct bpred_btb_ent_t *lruhead = NULL, *lruitem = NULL;
   int index, i;
@@ -891,6 +888,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 
     global_hist_reg = (global_hist_reg << 1) | (!!taken);
     global_hist_reg = global_hist_reg & ((1<< GlobalHistRegWidth) -1);
+    fprintf(tmp, "GHR: %x\t", global_hist_reg);
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
   if (taken)
@@ -978,19 +976,24 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
        {
            if (*dir_update_ptr->pdir1 < 7)
 	           ++*dir_update_ptr->pdir1;
+	           //fprintf(tmp, "\t3bitcount: %x", *dir_update_ptr->pdir1);
 	     }
        else
        {
            /* 2-bit sat ctr for bimod predictor/global as pdir1 */
            if (*dir_update_ptr->pdir1 < 3)
 	           ++*dir_update_ptr->pdir1;
+	           //fprintf(tmp, "\t2bitcount: %x", *dir_update_ptr->pdir1);
        }
     }  
    else
 	 { /* not taken */
 	   if (*dir_update_ptr->pdir1 > 0)
 	     --*dir_update_ptr->pdir1;
+	   //fprintf(tmp, "\tdec. count: %x", *dir_update_ptr->pdir1);
   	}
+  	// FIXME - printing the count value for debug
+  	fprintf(tmp, "count1: %x\t", *dir_update_ptr->pdir1);
     }
 
   /* combining predictor also updates second predictor and meta predictor */
@@ -998,51 +1001,54 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
   if (dir_update_ptr->pdir2)
     {
       if (taken)
-	{
-    /* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
-      /* Use 2-bit for global predictor and 3-bit for local predictor */
+			{
+    		/* FIXME -ECE587 : logic for 3-bit or 2-bit sat ctr */
+      	/* Use 2-bit for global predictor and 3-bit for local predictor */
 
-	  //if (*dir_update_ptr->pdir2 < 3)
- 	  //  ++*dir_update_ptr->pdir2;
-    if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) < 2)
-    {
-        /* 3 bit sat ctr for bimodal/global predictor for pdir2 */
-        if (*dir_update_ptr->pdir2 < 7)
- 	        ++*dir_update_ptr->pdir2;
-    }
-    else
-    {
-        /* 2 bit sat ctr for bimodal/global predictor for pdir2 */
-        if (*dir_update_ptr->pdir2 < 3)
- 	        ++*dir_update_ptr->pdir2;
-    }
-	}
+	  		//if (*dir_update_ptr->pdir2 < 3)
+ 	  		//  ++*dir_update_ptr->pdir2;
+    		if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) < 2)
+    		{
+        	/* 3 bit sat ctr for bimodal/global predictor for pdir2 */
+        	if (*dir_update_ptr->pdir2 < 7)
+ 	        	++*dir_update_ptr->pdir2;
+    		}
+    		else
+    		{
+        	/* 2 bit sat ctr for bimodal/global predictor for pdir2 */
+        	if (*dir_update_ptr->pdir2 < 3)
+ 	        	++*dir_update_ptr->pdir2;
+    		}
+			}
       else
-	{ /* not taken */
-	  if (*dir_update_ptr->pdir2 > 0)
-	    --*dir_update_ptr->pdir2;
-	}
+			{ /* not taken */
+	  		if (*dir_update_ptr->pdir2 > 0)
+	    		--*dir_update_ptr->pdir2;
+			}
+  		// FIXME - printing the count value for debug
+  		fprintf(tmp, "count2: %x\t", *dir_update_ptr->pdir2);
     }
 
   /* meta predictor */
   if (dir_update_ptr->pmeta)
     {
       if (dir_update_ptr->dir.bimod != dir_update_ptr->dir.twolev)
-	{
-	  /* we only update meta predictor if directions were different */
-	  if (dir_update_ptr->dir.twolev == (unsigned int)taken)
-	    {
-	      /* 2-level predictor was correct */
-	      if (*dir_update_ptr->pmeta < 3)
-		++*dir_update_ptr->pmeta;
-	    }
-	  else
-	    {
-	      /* bimodal predictor was correct */
-	      if (*dir_update_ptr->pmeta > 0)
-		--*dir_update_ptr->pmeta;
-	    }
-	}
+			{
+	  		/* we only update meta predictor if directions were different */
+	  		if (dir_update_ptr->dir.twolev == (unsigned int)taken)
+	    	{
+	      	/* 2-level predictor was correct */
+	      	if (*dir_update_ptr->pmeta < 3)
+						++*dir_update_ptr->pmeta;
+	    		}
+	  			else
+	    		{
+	      		/* bimodal predictor was correct */
+	      		if (*dir_update_ptr->pmeta > 0)
+							--*dir_update_ptr->pmeta;
+	    		}
+			}
+			fprintf(tmp, "meta_count: %x\t", *dir_update_ptr->pmeta);
     }
 
   /* update BTB (but only for taken branches) */
