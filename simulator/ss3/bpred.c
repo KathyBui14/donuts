@@ -225,11 +225,11 @@ bpred_dir_create (
   /* FIXME - ECE587 */
   /* Implement 3-bit saturating counter in 2 level local predictor */
       /* initialize counters to weakly this-or-that */
-      flipflop = 3;
+      flipflop = 4;//3;
       for (cnt = 0; cnt < l2size; cnt++)
 	{
 	  pred_dir->config.two.l2table[cnt] = flipflop;
-	  flipflop = 7 - flipflop;
+	  flipflop = 4;//7 - flipflop;
 	}
 
       break;
@@ -244,11 +244,11 @@ bpred_dir_create (
 	  calloc(l1size, sizeof(unsigned char))))
       fatal("cannot allocate 2bit storage");
     /* initialize counters to weakly this-or-that */
-    flipflop = 1;
+    flipflop = 2;//1;
     for (cnt = 0; cnt < l1size; cnt++)
       {
 	pred_dir->config.bimod.table[cnt] = flipflop;
-	flipflop = 3 - flipflop;
+	flipflop = 2;//3 - flipflop;
       }
 
     break;
@@ -544,6 +544,7 @@ bpred_dir_lookup(struct bpred_dir_t *pred_dir,	/* branch dir predictor inst */
         /* meta choice predictor uses BPred2bit class */
        //p = &pred_dir->config.bimod.table[BIMOD_HASH(pred_dir, baddr)];
         p = &pred_dir->config.bimod.table[GLOBAL_META_PRED_INDEX];
+        //fprintf(tmp, "GMpred = %x\t", (p & 0x3);
       break;
     case BPredTaken:
     case BPredNotTaken:
@@ -667,6 +668,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
 	                   % pred->retstack.size;
       pred->retstack_pops++;
       dir_update_ptr->dir.ras = TRUE; /* using RAS here */
+      //fprintf(tmp, "\nSTACK\n");
       return target;
     }
 
@@ -711,6 +713,7 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
   /* if this is a jump, ignore predicted direction; we know it's taken. */
   if ((MD_OP_FLAGS(op) & (F_CTRL|F_UNCOND)) == (F_CTRL|F_UNCOND))
     {
+    	//fprintf(tmp, "\nTAKEN\n");
       return (pbtb ? pbtb->target : 1);
     }
 
@@ -725,17 +728,22 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
 	     // ? /* taken */ 1
 	    //  : /* not taken */ 0);
      // if(*(dir_update_ptr->pmeta) >= 2)
+     
       if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
       {
+      	//fprintf(tmp2,"PREDG=%x\n",((*(dir_update_ptr->pdir1) >= 4)? /* taken */ 1 : /* not taken */ 0));
         return ((*(dir_update_ptr->pdir1) >= 4)
             ? /* taken */ 1
 	          : /* not taken */ 0);
+       	
       }
       else
       {
+      	//fprintf(tmp2,"PREDL=%x\n",((*(dir_update_ptr->pdir1) >= 2)? /* taken */ 1 : /* not taken */ 0));
         return ((*(dir_update_ptr->pdir1) >= 2)
             ? /* taken */ 1
 	          : /* not taken */ 0);
+	      
       }
     }
   else
@@ -747,17 +755,22 @@ bpred_lookup(struct bpred_t *pred,	/* branch predictor instance */
       //return ((*(dir_update_ptr->pdir1) >= 2)
 	    //  ? /* taken */ pbtb->target
 	    // : /* not taken */ 0);
+
      if(dir_update_ptr->pmeta != NULL && *(dir_update_ptr->pmeta) >= 2)
       {
+				//fprintf(tmp2,"PREDG-B=%x\n",((*(dir_update_ptr->pdir1) >= 4)? /* taken */ 1 : /* not taken */ 0));
         return ((*(dir_update_ptr->pdir1) >= 4)
             ? /* taken */ pbtb->target
 	          : /* not taken */ 0);
+	          
       }
       else
       {
+      	//fprintf(tmp2,"PREDL-B=%x\n",((*(dir_update_ptr->pdir1) >= 2)? /* taken */ 1 : /* not taken */ 0));
         return ((*(dir_update_ptr->pdir1) >= 2)
             ? /* taken */ pbtb->target
 	          : /* not taken */ 0);
+
       }
     }
 }
@@ -796,7 +809,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	     enum md_opcode op,		/* opcode of instruction */
 	     struct bpred_update_t *dir_update_ptr)/* pred state pointer */
 {
-
+	//fprintf(tmp, "\n%x\t%x\t%x\t%x\t%x", baddr, btarget, taken, pred_taken, correct);
   struct bpred_btb_ent_t *pbtb = NULL;
   struct bpred_btb_ent_t *lruhead = NULL, *lruitem = NULL;
   int index, i;
@@ -847,6 +860,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
       else
 	{
 	  /* return that used the ret-addr stack; no further work to do */
+	  //fprintf(tmp, "\nSTACK RETURN\n");
 	  return;
 	}
     }
@@ -887,8 +901,8 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
     }
 
     global_hist_reg = (global_hist_reg << 1) | (!!taken);
-    global_hist_reg = global_hist_reg & ((1<< GlobalHistRegWidth) -1);
-    fprintf(tmp, "GHR: %x\t", global_hist_reg);
+    global_hist_reg = global_hist_reg & ((1 << GlobalHistRegWidth) - 1);
+    //fprintf(tmp, "\t%x", global_hist_reg);
 
   /* find BTB entry if it's a taken branch (don't allocate for non-taken) */
   if (taken)
@@ -960,7 +974,7 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
    * and 'pbtb' is a possibly null pointer into the BTB (either to a 
    * matched-on entry or a victim which was LRU in its set)
    */
-
+//fprintf(tmp, "\n%x\t%x\t%x\t%x\t%x", baddr, btarget, taken, pred_taken, correct);
   /* update state (but not for jumps) */
   if (dir_update_ptr->pdir1)
     {
@@ -990,10 +1004,22 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	 { /* not taken */
 	   if (*dir_update_ptr->pdir1 > 0)
 	     --*dir_update_ptr->pdir1;
-	   //fprintf(tmp, "\tdec. count: %x", *dir_update_ptr->pdir1);
   	}
+  	CF = 1;
   	// FIXME - printing the count value for debug
-  	fprintf(tmp, "count1: %x\t", *dir_update_ptr->pdir1);
+  	fprintf(tmp, "%x", *dir_update_ptr->pdir1);
+  	/*if (*(dir_update_ptr->pmeta) >= 2) {
+  		if (*dir_update_ptr->pdir1 >= 4)
+  			fprintf(tmp, "\tT");
+  		else 
+  			fprintf(tmp, "\tNT");
+		}
+		else {
+  		if (*dir_update_ptr->pdir1 >= 2)
+  			fprintf(tmp, "\tT");
+  		else 
+  			fprintf(tmp, "\tNT");
+		}*/
     }
 
   /* combining predictor also updates second predictor and meta predictor */
@@ -1025,9 +1051,24 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	  		if (*dir_update_ptr->pdir2 > 0)
 	    		--*dir_update_ptr->pdir2;
 			}
+			
   		// FIXME - printing the count value for debug
-  		fprintf(tmp, "count2: %x\t", *dir_update_ptr->pdir2);
+  	fprintf(tmp, "\t%x", *dir_update_ptr->pdir2);
+  	/*if (*(dir_update_ptr->pmeta) >= 2) {
+  		if (*dir_update_ptr->pdir2 >= 4)
+  			fprintf(tmp, "\tT");
+  		else 
+  			fprintf(tmp, "\tNT");
+		}
+		else {
+  		if (*dir_update_ptr->pdir2 >= 2)
+  			fprintf(tmp, "\tT");
+  		else 
+  			fprintf(tmp, "\tNT");
+		}*/
     }
+    
+    
 
   /* meta predictor */
   if (dir_update_ptr->pmeta)
@@ -1040,15 +1081,21 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	      	/* 2-level predictor was correct */
 	      	if (*dir_update_ptr->pmeta < 3)
 						++*dir_update_ptr->pmeta;
+						//fprintf(tmp, "\tlocal correct\t");
 	    		}
 	  			else
 	    		{
 	      		/* bimodal predictor was correct */
 	      		if (*dir_update_ptr->pmeta > 0)
 							--*dir_update_ptr->pmeta;
+							//fprintf(tmp, "\tglobal correct\t");
 	    		}
-			}
-			fprintf(tmp, "meta_count: %x\t", *dir_update_ptr->pmeta);
+			}		
+			fprintf(tmp, "\t%x", *dir_update_ptr->pmeta);
+  	/*if (*(dir_update_ptr->pmeta) >= 2) 
+  			fprintf(tmp, "\tL");
+		else 
+  			fprintf(tmp, "\tG");*/
     }
 
   /* update BTB (but only for taken branches) */
@@ -1070,4 +1117,14 @@ bpred_update(struct bpred_t *pred,	/* branch predictor instance */
 	  pbtb->target = btarget;
 	}
     }
+    
+    // print the debug info...
+    if (CF) {
+    fprintf(tmp, "\t%x", global_hist_reg);
+    fprintf(tmp, "\t%x\t%x\t%x\t%x\t%x\n", baddr, btarget, taken, pred_taken, correct);
+		}
+    
+    CF = 0;
+    
+    
 }

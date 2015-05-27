@@ -2136,6 +2136,7 @@ ruu_commit(void)
   int i, lat, events, committed = 0;
   static counter_t sim_ret_insn = 0;
 
+			
   /* all values must be retired to the architected reg file in program order */
   while (RUU_num > 0 && committed < ruu_commit_width)
     {
@@ -2228,10 +2229,25 @@ ruu_commit(void)
 	  && bpred_spec_update == spec_CT
 	  && (MD_OP_FLAGS(rs->op) & F_CTRL))
 	{
-		// FIXME - printing debug info
-		fprintf(tmp, "\nbranch address(PC): %x\ttaken?: %x\tpred. taken?: %x\tcorrect?: %x\t", rs->PC, (rs->next_PC != (rs->PC + 
-									sizeof(md_inst_t))), (rs->pred_PC != (rs->PC + sizeof(md_inst_t))), (rs->pred_PC == rs->next_PC));
-									
+	//fprintf(tmp, "\n\nCOMMIT\n\n");
+	// FIXME - printing debug info
+		//CF = 1;
+		/*fprintf(tmp, "\n%x\t%x", rs->PC, rs->next_PC); 
+		if (rs->next_PC != (rs->PC + sizeof(md_inst_t))) 
+			fprintf(tmp, "\tT");
+		else 
+			fprintf(tmp, "\tNT");
+		if (rs->pred_PC != (rs->PC + sizeof(md_inst_t)))
+			fprintf(tmp, "\tT");
+		else 
+			fprintf(tmp, "\tNT");		
+		
+		if (rs->pred_PC == rs->next_PC)
+			fprintf(tmp, "\tT");
+		else 
+			fprintf(tmp, "\tNT");	*/
+			
+		//fprintf(tmp, "\n%x\t%x\t%x\t%x\t%x", rs->PC, rs->next_PC, (rs->next_PC != (rs->PC + sizeof(md_inst_t))), (rs->pred_PC != (rs->PC + sizeof(md_inst_t))), );									
 	  bpred_update(pred,
 		       /* branch address */rs->PC,
 		       /* actual target address */rs->next_PC,
@@ -2242,6 +2258,9 @@ ruu_commit(void)
                        /* correct pred? */rs->pred_PC == rs->next_PC,
                        /* opcode */rs->op,
                        /* dir predictor update pointer */&rs->dir_update);
+                       
+     //CF = 0;
+   
 	}
 
       /* invalidate RUU operation instance */
@@ -2276,6 +2295,8 @@ ruu_commit(void)
 	    panic ("retired instruction has odeps\n");
         }
     }
+    
+
 }
 
 
@@ -4298,7 +4319,8 @@ ruu_fetch(void)
 			   /* RSB index */&stack_recover_idx);
 	  else
 	    fetch_pred_PC = 0;
-
+		fprintf(tmp2,"P=%x\t", fetch_pred_PC);
+		fprintf(tmp2,"P=%x\n", fetch_regs_PC);
 	  /* valid address returned from branch predictor? */
 	  if (!fetch_pred_PC)
 	    {
@@ -4437,8 +4459,9 @@ sim_main(void)
   
 	//if (class == comb)
 	tmp = fopen("Alpha_Debug_SOO.txt", "w");
-	fprintf(tmp, "Begin Recording...\n");
+	fprintf(tmp, "count1:\tcount2\tmeta_count\tGHR\tbranch address(PC)\ttarget adder\ttaken?\tpred. taken?\tcorrect?\n");
 
+	tmp2 = fopen("Preds.txt", "w");
 
   /* set up program entry state */
   regs.regs_PC = ld_prog_entry;
